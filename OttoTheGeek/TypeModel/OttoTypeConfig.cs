@@ -125,12 +125,13 @@ public record OttoTypeConfig(
 
     private IComplexGraphType CreatGraphTypeStub()
     {
-        if (ClrType.IsInterface)
-        {
-            return new InterfaceGraphType();
-        }
+        IComplexGraphType result =
+            ClrType.IsInterface
+            ? new InterfaceGraphType()
+            : new ObjectGraphType();
 
-        return new ObjectGraphType();
+        result.SetOttoClrTypeMetadata(ClrType);
+        return result;
     }
     
     private OttoFieldConfig GetFieldConfig(PropertyInfo prop)
