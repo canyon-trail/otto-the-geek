@@ -29,7 +29,7 @@ namespace OttoTheGeek
             var configuratorType = typeof(IModelConfigurator<>).MakeGenericType(GetType());
             var configurators = assembly.GetTypes()
                 .Where(x => configuratorType.IsAssignableFrom(x))
-                .Where(x => x.IsConcrete())
+                .Where(IsConcrete)
                 .SelectMany(x => x.GetInterfaces(), (t, iface) => new { t, iface })
                 .Where(x => x.iface.IsGenericFor(typeof(IGraphTypeConfigurator<,>)))
                 .Select(x => ConfiguratorAdapter.Create(x.t, x.iface))
@@ -65,5 +65,11 @@ namespace OttoTheGeek
 
             return builder._schemaConfig;
         }
+
+        private static bool IsConcrete(Type t)
+        {
+            return t.IsClass && !t.IsAbstract;
+        }
     }
+
 }

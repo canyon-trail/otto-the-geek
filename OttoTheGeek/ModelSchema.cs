@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using OttoTheGeek.TypeModel;
 
 namespace OttoTheGeek
@@ -45,7 +46,12 @@ namespace OttoTheGeek
                 
                 foreach (var f in typeConfig.Fields.Values)
                 {
-                    graphType.AddField(f.ToGqlNetField(config, outputGraphTypes, inputGraphTypes));
+                    var field = f.ToGqlNetField(config, outputGraphTypes, inputGraphTypes);
+                    if (graphType is InterfaceGraphType)
+                    {
+                        field.Resolver = null;
+                    }
+                    graphType.AddField(field);
                 }
                 
                 foreach (var iface in typeConfig.Interfaces)
